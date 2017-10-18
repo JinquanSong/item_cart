@@ -1,0 +1,22 @@
+language: ruby
+dist: precise
+rvm:
+  - 2.4.2
+cache:
+  - bundler
+  - apt
+branches:
+  only:
+    - master
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install mysql
+  - gem update bundler
+before_script:
+  - mysql -e 'CREATE DATABASE item_cart_travis;;' -U root
+  - cp config/database/mysql.travis.yml config/database.yml
+  - bundle exec rake db:migrate --trace
+services:
+  - redis-server
+script:
+  - bundle exec rspec spec
